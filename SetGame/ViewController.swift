@@ -10,15 +10,20 @@ import UIKit
 
 class ViewController: UIViewController {
     var selected: Bool = false
-    lazy var game = SetGame()
+     var game = SetGame()
+  
     
     @IBOutlet var cardsButton: [UIButton]!
+    @IBOutlet weak var drawCardButton: UIButton!
     
    
 
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+//        for i in 12..<24
+//        {
+//            cardsButton[i].isHidden = true
+//        }
         updateView()
 
     }
@@ -29,6 +34,12 @@ class ViewController: UIViewController {
             updateView()
         }
     }
+    
+    
+    @IBAction func drawCards(_ sender: Any) {
+        game.drawCards()
+        updateView()
+    }
 
     /*
      Deal 12 cards only to start. They can appear anywhere on screen (i.e. they don’t have
@@ -36,39 +47,30 @@ class ViewController: UIViewController {
      want), but should not overlap.
      */
    
-
-    //Create a list of selected cards?????
     func updateView() {
- 
-//        for index in cardsButton.indices {
-//            let button = cardsButton[index]
-//            let card = game.cards[index]
-//
-////
-//            if card.isSelected {
-//                button.layer.borderWidth = 3.0
-//                button.layer.borderColor = UIColor.blue.cgColor
-//                button.layer.cornerRadius = 8.0
-//
-//            } else {
-//                button.layer.borderColor = nil
-//                button.layer.cornerRadius = 0.0
-//
-//            }
-//            if game.isMatching(at: index) {
-//                button.layer.borderColor = UIColor.red.cgColor
-//            }
-//
-//        }
+
+        if game.cardsInPlay.count < cardsButton.count {
+            drawCardButton.setTitle("Draw 3 Cards", for: .normal)
+            drawCardButton.isHidden = false
+            drawCardButton.isEnabled = true
+        } else {
+            drawCardButton.isHidden = true
+            drawCardButton.isEnabled = false
+        }
+        
         for (index, button) in cardsButton.enumerated() {
             if let card = index < game.cardsInPlay.count ? game.cardsInPlay[index] : nil {
-//                print(card)
                 button.setAttributedTitle(getSetCard(card: card), for: .normal)
                 if game.selectedCards.contains(card) {
                     button.layer.borderWidth = 3.0
+                    button.layer.borderColor = UIColor.green.cgColor
                     if game.matchedCards.contains(card) {
                         button.layer.borderColor = UIColor.blue.cgColor
                     }
+                } else {
+                    button.layer.borderWidth = 3.0
+                    button.layer.borderColor = nil
+
                 }
                 
             }
@@ -105,25 +107,6 @@ class ViewController: UIViewController {
             
             var proposedText = ""
             
-//            switch (card.number, card.shape){
-//            case (.primary, .primary):
-//                proposedText = "▲"
-//            case(.primary, .secondary):
-//                proposedText = "▲▲"
-//            case(.primary, .tertiary):
-//                proposedText = "▲▲▲"
-//            case(.secondary, .primary):
-//                proposedText = "●"
-//            case(.secondary, .secondary):
-//                proposedText = "●●"
-//            case(.secondary, .tertiary):
-//                proposedText = "●●●"
-//            case(.tertiary, .primary):
-//                proposedText = "▲"
-//            case(.tertiary, .secondary):
-//                proposedText = "▲▲"
-//            case(.tertiary, .tertiary):
-//                proposedText = "▲▲▲"
             switch (card.number, card.shape) {
             case (SetCard.CardProperty.primary, SetCard.CardProperty.primary):
                 proposedText = "▲"
@@ -150,10 +133,6 @@ class ViewController: UIViewController {
         return cardSymbol[card] ?? NSAttributedString()
     }
 }
-
-
-
-
 
 extension Int {
     var arc4random: Int {
